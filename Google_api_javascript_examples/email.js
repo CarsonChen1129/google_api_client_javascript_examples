@@ -10,10 +10,8 @@
          * @param  {Function} callback Function to call when the request is complete.
          */
         function createDraft(userId, email, attachment, callback) {
-            console.log(email);
             var base64EncodedEmail = Base64.encode(email).replace(/\//g,'_').replace(/\+/g,'-');
-            console.log(base64EncodedEmail);
-            if(attachment){
+            if (attachment) {
                 gapi.client.gmail.users.drafts.create({
                     'userId': userId,
                     'message': {
@@ -36,6 +34,7 @@
          * @param  {String} userId User's email address. The special value 'me'
          * can be used to indicate the authenticated user.
          * @param  {String} draftId ID of Draft to delete.
+         * @param  {Function} callback Function to call when the request is complete.
          */
         function deleteDraft(userId, draftId,callback) {
             var request = gapi.client.gmail.users.drafts.delete({
@@ -109,6 +108,7 @@
          * @param  {String} userId User's email address. The special value 'me'
          * can be used to indicate the authenticated user.
          * @param  {String} messageId ID of Message to delete.
+         * @param  {Function} callback Function to call when the request is complete.
          */
         function deleteMessage(userId, messageId, callback) {
             var request = gapi.client.gmail.users.messages.delete({
@@ -211,19 +211,19 @@
          * @param  {String} userId User's email address. The special value 'me'
          * can be used to indicate the authenticated user.
          * @param  {String} email RFC 2822 formatted String.
+         * @param  {Boolean} attachment a boolean value to indicate attachment
          * @param  {Function} callback Function to call when the request is complete.
          */
         function sendMessage(userId, email, attachment, callback) {
-            console.log("In sendMessage: "+email);
             var base64EncodedEmail = Base64.encode(email).replace(/\//g,'_').replace(/\+/g,'-');
-            if(attachment){
+            if (attachment) {
                 gapi.client.gmail.users.messages.send({
                     'userId': userId,
                     'message': {
                         'raw': base64EncodedEmail
                     }
                 }).execute(callback);
-            }else{
+            } else {
                 gapi.client.gmail.users.messages.send({
                     'userId': userId,
                     'resource': {
@@ -239,8 +239,7 @@
          *
          * @param  {String} userId User's email address. The special value 'me'
          * can be used to indicate the authenticated user.
-         * @param  {String} msg_id ID of Message with attachments.
-         * @param  {String} att_id ID of the attachment
+         * @param  {Object} message Message object
          * @param  {Function} callback Function to call when the request is complete.
          */
         function getEmailAttachments(userId, message, callback) {
@@ -260,6 +259,16 @@
                 }
             }
         }
+
+        /**
+         * Get single attachment from a given Message
+         * 
+         * @param  {String} userId User's email address. The special value 'me'
+         * can be used to indicate the authenticated user.
+         * @param  {String} msg_id ID of Message with attachments.
+         * @param  {String} att_id ID of the attachment
+         * @param  {Function} callback Function to call when the request is complete.
+         */
         function getEmailAttachment(userId, msg_id,att_id, callback) {
                 if (filename && filename.length > 0) {
                     var request = gapi.client.gmail.users.messages.attachments.get({
@@ -314,15 +323,15 @@
          * can be used to indicate the authenticated user.
          * @param  {Function} callback Function to call when the request is complete.
          */
-        // function listLabels(userId, callback) {
-        //     var request = gapi.client.gmail.users.labels.list({
-        //         'userId': userId
-        //     });
-        //     request.execute(function(resp) {
-        //         var labels = resp.labels;
-        //         callback(labels);
-        //     });
-        // }
+        function listLabels(userId, callback) {
+            var request = gapi.client.gmail.users.labels.list({
+                'userId': userId
+            });
+            request.execute(function(resp) {
+                var labels = resp.labels;
+                callback(labels);
+            });
+        }
 
         /**
          * Update an existing Label.
@@ -348,3 +357,7 @@
             });
             request.execute(callback);
         }
+
+
+
+        /* ================End of this section================  */
